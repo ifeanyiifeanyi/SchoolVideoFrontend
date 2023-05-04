@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, useColorScheme } from 'react-native';
 import SignIn from './Screens/SignIn';
@@ -11,14 +11,27 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import NetInfo from '@react-native-community/netinfo';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
 const App = () => {
 
-  const [isSignedIn, setIsSignedIn] = useState(true);
-
+  const [isSignedIn, setIsSignedIn] = useState(false);
+  useEffect(() => {
+    handleGetToken();
+  }, [])
+  const handleGetToken = async () => {
+    const dataToken = await AsyncStorage.getItem('token');
+    console.log(dataToken)
+    if (dataToken) {
+      setIsSignedIn(true);
+    } else {
+      setIsSignedIn(false);
+    }
+  }
   if (isSignedIn == true) {
     return (
       <NavigationContainer>
@@ -45,8 +58,8 @@ const App = () => {
               // You can return any component that you like here!
               return <Ionicons name={iconName} size={size} color={color} />;
             },
-            tabBarActiveTintColor: 'tomato',
-            tabBarInactiveTintColor: 'gray',
+            tabBarActiveTintColor: '#21abc1',
+            tabBarInactiveTintColor: '#acac16',
           })}
         >
           <Tab.Screen name="Home" component={Home} options={{ headerShown: false }} />

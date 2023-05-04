@@ -6,6 +6,8 @@ import FormError from '../Components/FormError';
 import FormSuccess from '../Components/FormSuccess';
 import axios from 'axios';
 import { BASE_URL } from '@env'
+import NetInfo from '@react-native-community/netinfo';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const SignIn = ({ navigation }) => {
 
@@ -26,6 +28,36 @@ const SignIn = ({ navigation }) => {
         setUser(value)
     }
 
+    function loginUserAccount() {
+        setIsLoading(true);
+        axios.post(`${BASE_URL}/api/login`, {
+            user: user,
+            password: password,
+            deviceName: Device.deviceName
+        }).then(response => {
+            console.log(response.data);
+            if (response.data.status === false) {
+                setIsLoading(false)
+                setErrMessage(response.data.message);
+                return setDisplayFormErr(true);
+            }
+            if (response.data.status === true) {
+                setIsLoading(false);
+                setSuccessMessage("Login successful")
+                setUser('');
+                setPassword('')
+                AsyncStorage.setItem('token', response.data.token);
+                AsyncStorage.setItem('name', response.data.username.name);
+                AsyncStorage.setItem('username', response.data.username.username);
+                AsyncStorage.setItem('email', response.data.username.email);
+            }
+        }).catch(err => {
+            setIsLoading(false)
+            console.log("catch:: ", err)
+            setErrMessage("Error occurred, please try again later.");
+            return setDisplayFormErr(true);
+        })
+    }
     const validateInput = () => {
         let inputValue = [user, password];
         if (inputValue.includes('') || inputValue.includes(undefined)) {
@@ -35,7 +67,8 @@ const SignIn = ({ navigation }) => {
         if (password.length < 6) {
             setErrMessage("Password must be at least 6 characters long")
             return setDisplayFormErr(true);
-          }
+        }
+        loginUserAccount();
     }
     return (
         <SafeAreaView style={styles.mainViewContainer}>
@@ -53,7 +86,7 @@ const SignIn = ({ navigation }) => {
 
                     <TextInput onChangeText={passwordChange} value={password} placeholder='Password' style={styles.input} placeholderTextColor={'#acace6'} secureTextEntry={true} />
 
-                    <TouchableOpacity style={styles.btn}>
+                    <TouchableOpacity style={styles.btn} onPress={validateInput}>
                         <Text style={styles.btnText}>Sign in</Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.signUpTouch} onPress={() => navigation.navigate('SignUp')}>
@@ -64,6 +97,9 @@ const SignIn = ({ navigation }) => {
             </ScrollView>
             {
                 displayFormErr === true ? <FormError hideErrorOverlay={setDisplayFormErr} err={errMessage} /> : null
+            }
+            {
+                isloading === true ? <FormSuccess /> : successMessage == "Login successful" ? <FormSuccess successMessage={successMessage} close={setSuccessMessage} /> : null
             }
         </SafeAreaView>
     );
