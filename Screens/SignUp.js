@@ -22,7 +22,7 @@ export default function SignUp({ navigation }) {
 
   const [displayFormSuccess, setDisplayFormSuccess] = useState(false);
   const [displayFormErr, setDisplayFormErr] = useState(false);
-  
+
 
   const toggleOverlay = () => {
     setVisible(!visible);
@@ -61,34 +61,53 @@ export default function SignUp({ navigation }) {
       deviceName: Device.deviceName
     }).then(response => {
       console.log("r", response.data.message);
-      if(response.data.status === false){
+      if (response.data.status === false) {
         setIsLoading(false)
         setErrMessage("Username | Registration Code | Email is incorrect. Please try again");
         return setDisplayFormErr(true);
       }
 
-      if(response.data.status === true){
+      if (response.data.status === true) {
         setIsLoading(false);
         setSuccessMessage("Your account has been created, please check your email for verification")
+        setName('');
+        setUsername('')
+        setRegistrationCode("")
+        setEmail("")
+        setPassword('')
+        setPassword_confirmation("")
       }
     }).catch(error => {
       setIsLoading(false)
-      console.log("catch:: ",error)
+      console.log("catch:: ", error)
       setErrMessage("Error occurred, please try again later.");
-        return setDisplayFormErr(true);
+      return setDisplayFormErr(true);
     });
   }
 
   function validateForm() {
     var formInputs = [name, username, registrationCode, email, password, password_confirmation];
     var passwordMatch = password === password_confirmation;
+    const emailRegex = /\S+@\S+\.\S+/;
+    if (!emailRegex.test(email)) {
+      setErrMessage("Please enter a valid email address!")
+      return setDisplayFormErr(true);
+    }
 
     if (formInputs.includes('') || formInputs.includes(undefined)) {
       setErrMessage("All fields are required!")
       return setDisplayFormErr(true);
-
     }
 
+
+    if (name.length < 4) {
+      setErrMessage("Name must be at least 6 characters long")
+      return setDisplayFormErr(true);
+    }
+    if (username.length < 3) {
+      setErrMessage("Username must be at least 6 characters long")
+      return setDisplayFormErr(true);
+    }
     if (password.length < 6) {
       setErrMessage("Password must be at least 6 characters long")
       return setDisplayFormErr(true);
@@ -135,7 +154,7 @@ export default function SignUp({ navigation }) {
         displayFormErr === true ? <FormError hideErrorOverlay={setDisplayFormErr} err={errMessage} /> : null
       }
       {
-        isloading === true ? <FormSuccess /> : successMessage == "Your account has been created, please check your email for verification" ? <FormSuccess successMessage={successMessage} /> : null
+        isloading === true ? <FormSuccess /> : successMessage == "Your account has been created, please check your email for verification" ? <FormSuccess successMessage={successMessage} close={setSuccessMessage} /> : null
       }
 
     </SafeAreaView>

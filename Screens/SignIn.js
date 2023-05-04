@@ -1,21 +1,42 @@
-import React, {useEffect} from 'react';
-import { View, StyleSheet, Button, Text, Image, TextInput, KeyboardAvoidingView, TouchableOpacity, ScrollView, SafeAreaView } from 'react-native';
-import { useNavigation } from '@react-navigation/native'
+import React, { useState } from 'react';
+import { View, StyleSheet, Button, Text, Image, TextInput, KeyboardAvoidingView, TouchableOpacity, ScrollView, SafeAreaView, ActivityIndicator } from 'react-native';
+import Icon from 'react-native-vector-icons/Feather';
+import * as Device from 'expo-device';
+import FormError from '../Components/FormError';
+import FormSuccess from '../Components/FormSuccess';
 import axios from 'axios';
-import {BASE_URL} from '@env'
+import { BASE_URL } from '@env'
 
-const SignIn = () => {
-    const navigation = useNavigation();
+const SignIn = ({ navigation }) => {
 
-    // useEffect(() => {
-    //     try {
-    //         const r = axios.get('https://bc5b-102-88-62-60.ngrok-free.app');
-    //         console.log("u",r)
-    //     } catch (error) {
-    //         console.log(error)
-    //     }
-    // })
+    const [user, setUser] = useState('');
+    const [password, setPassword] = useState('');
 
+    const [errMessage, setErrMessage] = useState('');
+    const [successMessage, setSuccessMessage] = useState('');
+    const [isloading, setIsLoading] = useState(false)
+
+
+    const [displayFormSuccess, setDisplayFormSuccess] = useState(false);
+    const [displayFormErr, setDisplayFormErr] = useState(false);
+    function passwordChange(value) {
+        setPassword(value);
+    }
+    function userChange(value) {
+        setUser(value)
+    }
+
+    const validateInput = () => {
+        let inputValue = [user, password];
+        if (inputValue.includes('') || inputValue.includes(undefined)) {
+            setErrMessage("All fields are required!")
+            return setDisplayFormErr(true);
+        }
+        if (password.length < 6) {
+            setErrMessage("Password must be at least 6 characters long")
+            return setDisplayFormErr(true);
+          }
+    }
     return (
         <SafeAreaView style={styles.mainViewContainer}>
 
@@ -28,9 +49,9 @@ const SignIn = () => {
                     Back
                 </Text>
                 <KeyboardAvoidingView style={styles.formView} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
-                    <TextInput placeholder='Email Address | Username' style={styles.input} placeholderTextColor={'#acace6'} />
+                    <TextInput onChangeText={userChange} value={user} placeholder='Email Address | Username' style={styles.input} placeholderTextColor={'#acace6'} />
 
-                    <TextInput placeholder='Password' style={styles.input} placeholderTextColor={'#acace6'} secureTextEntry={true} />
+                    <TextInput onChangeText={passwordChange} value={password} placeholder='Password' style={styles.input} placeholderTextColor={'#acace6'} secureTextEntry={true} />
 
                     <TouchableOpacity style={styles.btn}>
                         <Text style={styles.btnText}>Sign in</Text>
@@ -41,6 +62,9 @@ const SignIn = () => {
 
                 </KeyboardAvoidingView>
             </ScrollView>
+            {
+                displayFormErr === true ? <FormError hideErrorOverlay={setDisplayFormErr} err={errMessage} /> : null
+            }
         </SafeAreaView>
     );
 }

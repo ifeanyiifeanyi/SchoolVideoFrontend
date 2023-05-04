@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, Text, ActivityIndicator, useColorScheme } from 'react-native';
+import { View, StyleSheet, Text, ActivityIndicator, useColorScheme, Image, TouchableOpacity } from 'react-native';
 import { Overlay } from '@rneui/themed';
 
 
@@ -9,7 +9,7 @@ const FormSuccess = (props) => {
     return (
         props.successMessage ?
 
-            <Overlay overlayStyle={colorScheme === 'light' ? styles.lightBackground : styles.darkBackground} isVisible={true}>
+            <Overlay overlayStyle={colorScheme === 'light' ? styles.lightBackground : styles.darkBackground} isVisible={true} onBackdropPress={() => props.close(false)}>
                 <View style={styles.errorView}>
                     <Image style={styles.errorIcon} source={require('../assets/images/checked.png')} />
                 </View>
@@ -20,7 +20,7 @@ const FormSuccess = (props) => {
                     </Text>
 
                 </View>
-                <TouchableOpacity style={styles.btnError} onPress={() => props.hideErrorOverlay(false)}>
+                <TouchableOpacity style={styles.btnError} onPress={() => props.close(false)}>
                     <Text style={styles.btnErrorTxt}>Okay</Text>
                 </TouchableOpacity>
             </Overlay>
