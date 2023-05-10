@@ -7,6 +7,7 @@ import Home from './Screens/SignedIn/Home';
 import Article from './Screens/SignedIn/Article';
 import Notification from './Screens/SignedIn/Notification';
 import Profile from './Screens/SignedIn/Profile';
+import Player from './Screens/SignedIn/Player';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -15,10 +16,18 @@ import NetInfo from '@react-native-community/netinfo';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Stack = createNativeStackNavigator();
+const HomeStack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
 const App = () => {
 
+  const HomeScreen = ({ navigation }) => {
+    return (
+    <HomeStack.Navigator>
+      <HomeStack.Screen name="Feed" component={Home} options={{ headerShown: false }} />
+      <HomeStack.Screen name="Player" component={Player} options={{ headerShown: false }} />
+    </HomeStack.Navigator>)
+  }
   const [isSignedIn, setIsSignedIn] = useState(false);
   useEffect(() => {
     handleGetToken();
@@ -49,7 +58,7 @@ const App = () => {
 
               } else if (route.name === 'Notification') {
                 iconName = focused ? 'ios-notifications-circle' : 'ios-notifications-circle-outline';
-                
+
               } else if (route.name === 'Article') {
 
                 iconName = focused ? 'md-file-tray-full' : 'md-file-tray-full-outline';
@@ -62,7 +71,7 @@ const App = () => {
             tabBarInactiveTintColor: '#acac16',
           })}
         >
-          <Tab.Screen name="Home" component={Home} options={{ headerShown: false }} />
+          <Tab.Screen name="Home" component={HomeScreen} options={{ headerShown: false }} />
           <Tab.Screen name="Article" component={Article} options={{ headerShown: false }} />
           <Tab.Screen name="Notification" component={Notification} options={{ headerShown: false }} />
           <Tab.Screen name="Profile" component={Profile} options={{ headerShown: false }} />

@@ -9,7 +9,7 @@ import { BASE_URL } from '@env'
 import NetInfo from '@react-native-community/netinfo';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const SignIn = ({ navigation }) => {
+const SignIn = ({ navigation, route }) => {
 
     const [user, setUser] = useState('');
     const [password, setPassword] = useState('');
