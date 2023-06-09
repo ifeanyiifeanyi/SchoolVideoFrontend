@@ -19,7 +19,7 @@ const Stack = createNativeStackNavigator();
 const HomeStack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
-const App = () => {
+const App = ({navigation}) => {
 
   const HomeScreen = ({ navigation }) => {
     return (
